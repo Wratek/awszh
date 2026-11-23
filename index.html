@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felhő alapú szolgáltatások - AWS ZH Segédlet</title>
+    <style>
+        :root {
+            --aws-navy: #232f3e;
+            --aws-orange: #ff9900;
+            --aws-light-bg: #f2f3f3;
+            --aws-border: #eaeded;
+            --aws-dark-blue: #0073bb;
+            --aws-code-bg: #1e1e1e;
+            --text-color: #16191f;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: var(--aws-navy);
+            border-bottom: 3px solid var(--aws-orange);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        h2 {
+            color: var(--aws-navy);
+            background-color: #eef3f7;
+            padding: 10px 15px;
+            border-left: 5px solid var(--aws-orange);
+            border-radius: 0 4px 4px 0;
+            margin-top: 35px;
+        }
+
+        h3 {
+            color: var(--aws-dark-blue);
+            margin-top: 25px;
+            border-bottom: 1px solid var(--aws-border);
+            padding-bottom: 5px;
+        }
+
+        /* AWS Stílusú elemek megkülönböztetése */
+        .btn-orange {
+            background-color: var(--aws-orange);
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9em;
+            display: inline-block;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .btn-blue {
+            background-color: #ffffff;
+            color: var(--aws-dark-blue);
+            border: 1px solid var(--aws-dark-blue);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+
+        .menu-item {
+            font-weight: 600;
+            color: #2c3e50;
+            background-color: #f0f4f8;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .panel-name {
+            font-weight: bold;
+            color: #555;
+            text-decoration: underline;
+        }
+
+        .param-value {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #e8f4f8;
+            color: #0d6efd;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .alert-info {
+            background-color: #e7f3fe;
+            border-left: 4px solid #2196F3;
+            padding: 12px 16px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 16px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 12px 16px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Kódblokkok */
+        pre {
+            background-color: var(--aws-code-bg);
+            color: #00ff66;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            border: 1px solid #333;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .step-list li {
+            list-style-type: none;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .step-list li::before {
+            content: "➔";
+            position: absolute;
+            left: 0;
+            color: var(--aws-orange);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>☁️ Felhő alapú szolgáltatások - AWS ZH Segédlet</h1>
+
+    <h2>1. Előfeltételek & Bejelentkezés</h2>
+    <div class="alert-info">
+        <ul>
+            <li>Regisztráció: <a href="https://aws.amazon.com" target="_blank">aws.amazon.com</a></li>
+            <li><strong>Free Tier feltételek:</strong> Max. 6 hónapig és azon belül 700 óra használat ingyenes.</li>
+            <li>Mindig a <span class="param-value">Free tier eligible</span> címkével ellátott erőforrásokat válaszd!</li>
+            <li><strong>Gyakorlás után:</strong> Mindig töröld le a létrehozott erőforrásokat, hogy ne fogyassza a keretet.</li>
+            <li><strong>2FA:</strong> Állítsd be a kétfaktoros hitelesítést regisztráció után!</li>
+        </ul>
+    </div>
+    <p><strong>Bejelentkezés lépései:</strong></p>
+    <ul class="step-list">
+        <li>Kattints a <span class="btn-blue">Sign in to Console</span> gombra.</li>
+        <li>Válaszd a <span class="param-value">Sign in with root user email</span> opciót.</li>
+        <li>Végezd el a 2FA azonosítást.</li>
+        <li><strong>RÉGIÓ FONTOS:</strong> A jobb felső sarokban mindig <span class="param-value">Europe (Frankfurt) / eu-central-1</span> legyen kiválasztva!</li>
+    </ul>
+
+    <h2>2. Hálózat létrehozása és beállítása (VPC, Subnet, IGW, Route)</h2>
+    
+    <h3>a) VPC létrehozása</h3>
+    <ul class="step-list">
+        <li>AWS Kereső: <span class="menu-item">VPC</span></li>
+        <li>Bal oldali menü: <span class="menu-item">Your VPCs</span></li>
+        <li>Jobb felső sarok: <span class="btn-orange">Create VPC</span></li>
+        <li><span class="panel-name">Name tag:</span> <span class="param-value">NEPTUN-vpc-1</span></li>
+        <li><span class="panel-name">IPv4 CIDR:</span> <span class="param-value">10.0.0.0/24</span></li>
+        <li>Nyomj rá a <span class="btn-orange">Create VPC</span> gombra.</li>
+    </ul>
+
+    <h3>b) Alhálózatok (Subnets)</h3>
+    <p>3 darab subnetet hozunk létre a <span class="param-value">10.0.0.0/24</span> CIDR tartományon belül:</p>
+    <ul class="step-list">
+        <li>Bal oldali menü: <span class="menu-item">Subnets</span> ➔ <span class="btn-orange">Create subnet</span></li>
+        <li><span class="panel-name">VPC ID:</span> Válaszd ki a sajátodat (<span class="param-value">NEPTUN-vpc-1</span>)</li>
+        <li>Hozz létre 3 alhálózatot az <span class="btn-blue">Add new subnet</span> gombbal:
+            <ul>
+                <li><strong>1. Subnet:</strong> Name: <span class="param-value">NEPTUN-subnet-1</span> | AZ: <span class="param-value">eu-central-1a</span> | CIDR: <span class="param-value">10.0.0.0/25</span></li>
+                <li><strong>2. Subnet:</strong> Name: <span class="param-value">NEPTUN-subnet-2</span> | AZ: <span class="param-value">eu-central-1b</span> | CIDR: <span class="param-value">10.0.0.128/26</span></li>
+                <li><strong>3. Subnet:</strong> Name: <span class="param-value">NEPTUN-subnet-3</span> | AZ: <span class="param-value">eu-central-1c</span> | CIDR: <span class="param-value">10.0.0.192/26</span></li>
+            </ul>
+        </li>
+        <li>Kattints a <span class="btn-orange">Create subnet</span> gombra.</li>
+    </ul>
+
+    <div class="alert-warning">
+        <strong>Automata IP kiosztás (DHCP) beállítása:</strong><br>
+        A létrehozott subneteket egyesével jelöld ki a listában ➔ <span class="btn-blue">Actions</span> ➔ <span class="menu-item">Edit subnet settings</span> ➔ Pipáld be: <span class="param-value">Enable auto-assign public IPv4 address</span> ➔ <span class="btn-orange">Save</span>
+    </div>
+
+    <h3>c) Internet Gateway (IGW)</h3>
+    <ul class="step-list">
+        <li>Bal oldali menü: <span class="menu-item">Internet gateways</span> ➔ <span class="btn-orange">Create internet gateway</span></li>
+        <li><span class="panel-name">Name tag:</span> <span class="param-value">NEPTUN-igw-1</span> ➔ <span class="btn-orange">Create internet gateway</span></li>
+        <li>Jelöld ki a listában az IGW-t ➔ <span class="btn-blue">Actions</span> ➔ <span class="menu-item">Attach to VPC</span></li>
+        <li>Válaszd ki a saját VPC-det (<span class="param-value">NEPTUN-vpc-1</span>) ➔ <span class="btn-orange">Attach to VPC</span></li>
+    </ul>
+
+    <h3>d) Route Tables</h3>
+    <ul class="step-list">
+        <li>Bal oldali menü: <span class="menu-item">Route tables</span> ➔ <span class="btn-orange">Create route table</span></li>
+        <li><span class="panel-name">Name:</span> <span class="param-value">NEPTUN-rtb-1</span> | <span class="panel-name">VPC:</span> Saját VPC kiválasztása ➔ <span class="btn-orange">Create route table</span></li>
+        <li>A létrejött route tábla részleteinél: <span class="btn-blue">Edit routes</span> ➔ <span class="btn-blue">Add route</span></li>
+        <li><span class="panel-name">Destination:</span> <span class="param-value">0.0.0.0/0</span> | <span class="panel-name">Target:</span> Internet Gateway (kiválasztva a <span class="param-value">NEPTUN-igw-1</span>-et)</li>
+        <li>Nyomj rá a <span class="btn-orange">Save changes</span> gombra.</li>
+    </ul>
+
+    <h2>3. Security Group (Biztonsági Csoport) Beállítása</h2>
+    <ul class="step-list">
+        <li>Bal oldali menü: <span class="menu-item">Security groups</span></li>
+        <li>Válaszd ki azt a Security Group-ot, ami a saját VPC-dhez jött létre.</li>
+        <li>Az <span class="panel-name">Inbound rules</span> fülön kattints az <span class="btn-blue">Edit inbound rules</span> gombra.</li>
+        <li>Add hozzá az alábbi szabályokat (<span class="btn-blue">Add rule</span>):
+            <ul>
+                <li><strong>SSH:</strong> Port 22 | Source: <span class="param-value">Anywhere-IPv4 (0.0.0.0/0)</span></li>
+                <li><strong>HTTP:</strong> Port 80 | Source: <span class="param-value">Anywhere-IPv4 (0.0.0.0/0)</span></li>
+                <li><strong>HTTPS:</strong> Port 443 | Source: <span class="param-value">Anywhere-IPv4 (0.0.0.0/0)</span></li>
+                <li><strong>MySQL/Aurora:</strong> Port 3306 | Source: <span class="param-value">Custom (10.0.0.0/24)</span></li>
+            </ul>
+        </li>
+        <li>Mentés: <span class="btn-orange">Save rules</span></li>
+    </ul>
+
+    <h2>4. Adatbázis és Szerverek Létrehozása</h2>
+
+    <h3>a) RDS MySQL Adatbázis Szerver</h3>
+    <ul class="step-list">
+        <li>AWS Kereső: <span class="menu-item">RDS</span> ➔ <span class="btn-orange">Create database</span></li>
+        <li><span class="panel-name">Creation method:</span> Standard create (Full configuration)</li>
+        <li><span class="panel-name">Engine type:</span> <span class="param-value">MySQL</span></li>
+        <li><span class="panel-name">Credentials Settings:</span>
+            <ul>
+                <li>Master username: <span class="param-value">api</span></li>
+                <li>Master password: <span class="param-value">12345678</span></li>
+            </ul>
+        </li>
+        <li><span class="panel-name">Connectivity:</span>
+            <ul>
+                <li>Virtual Private Cloud (VPC): <span class="param-value">NEPTUN-vpc-1</span></li>
+            </ul>
+        </li>
+        <li>Kattints a <span class="btn-orange">Create database</span> gombra.</li>
+    </ul>
+    <div class="alert-info">
+        <strong>Megjegyzés:</strong> Az adatbázis elindulása perceket vesz igénybe. Amíg készül, a felső sávban kattints a <span class="btn-blue">View connection details</span> gombra, mert az <strong>Endpoint URL</strong>-re szükséged lesz az API szerver beállításánál!
+    </div>
+
+    <h3>b) API Szerver (EC2) Létrehozása</h3>
+    <ul class="step-list">
+        <li>AWS Kereső: <span class="menu-item">EC2</span> ➔ <span class="menu-item">Instances</span> ➔ <span class="btn-orange">Launch instances</span></li>
+        <li><span class="panel-name">Name and tags:</span> <span class="param-value">NEPTUN-ec2-api</span></li>
+        <li><span class="panel-name">OS Image:</span> <span class="param-value">Ubuntu (Free tier eligible)</span></li>
+        <li><span class="panel-name">Key pair:</span> Válaszd ki a meglévő kulcsot vagy hozz létre újat.</li>
+        <li><span class="panel-name">Network settings</span> ➔ <span class="btn-blue">Edit</span>:
+            <ul>
+                <li>VPC: <span class="param-value">NEPTUN-vpc-1</span></li>
+                <li>Subnet: <span class="param-value">NEPTUN-subnet-1</span></li>
+                <li>Security group: Válaszd ki a VPC-dhez tartozó meglévő csoportot.</li>
+            </ul>
+        </li>
+        <li><span class="panel-name">Advanced details</span> ➔ <span class="panel-name">User data:</span> Töltsd ki az alábbi szkripttel (<strong>Írd át a MYSQL_DOMAIN és NEPTUN változókat!</strong>):</li>
+    </ul>
+
+<pre>#!/bin/bash
+# variables
+NEPTUN="NEPTUN"                                                      # A te Neptun kódod
+MYSQL_DOMAIN="neptun-db.xxxx.eu-central-1.rds.amazonaws.com"        # RDS Mysql Endpoint URL
+
+apt update
+apt install wget unzip python3 python3-pip python3-flask -y
+apt install python3-mysql.connector -y
+
+# get code
+mkdir /tmp/code
+cd /tmp/code
+wget https://wiki.farkas-attila.hu/images/c/c7/Weboldal.zip
+unzip Weboldal.zip
+
+# change &lt;ip&gt; tag in code
+sed -i "s/&lt;ip&gt;/$MYSQL_DOMAIN/g" api.py
+
+# create directory for server
+mkdir -p /srv/$NEPTUN
+mv api.py /srv/$NEPTUN/
+
+# remove tmp directory
+cd /
+rm -rf /tmp/code
+
+echo "@reboot root sleep 10s && python3 /srv/$NEPTUN/api.py &" >> /etc/crontab
+cd /srv/$NEPTUN && nohup python3 api.py > api.log 2>&1 &
+</pre>
+    <p>Indítás: <span class="btn-orange">Launch instance</span></p>
+
+    <h3>c) UI Szerver (EC2) Létrehozása</h3>
+    <ul class="step-list">
+        <li>EC2 ➔ <span class="menu-item">Instances</span> ➔ <span class="btn-orange">Launch instances</span></li>
+        <li><span class="panel-name">Name and tags:</span> <span class="param-value">NEPTUN-ec2-ui</span></li>
+        <li><span class="panel-name">OS Image:</span> <span class="param-value">Ubuntu (Free tier eligible)</span></li>
+        <li><span class="panel-name">Network settings</span> ➔ <span class="btn-blue">Edit</span>:
+            <ul>
+                <li>VPC: <span class="param-value">NEPTUN-vpc-1</span></li>
+                <li>Subnet: <span class="param-value">NEPTUN-subnet-2</span></li>
+                <li>Security group: Meglévő biztonsági csoport kiválasztása.</li>
+            </ul>
+        </li>
+        <li><span class="panel-name">Advanced details</span> ➔ <span class="panel-name">User data:</span> Töltsd ki az alábbi szkripttel (<strong>Írd át az API_LB_DOMAIN és NEPTUN változókat!</strong>):</li>
+    </ul>
+
+<pre>#!/bin/bash
+export DEBIAN_FRONTEND=noninteractive
+
+# variables
+NEPTUN="NEPTUN"                                  # A te Neptun kódod
+API_LB_DOMAIN="10.0.0.xxx"                      # Az API szerver publikus/privát IP címe
+
+apt-get update
+apt-get install -y wget unzip apache2 php libapache2-mod-php php-curl
+
+# get code
+mkdir -p /tmp/code
+cd /tmp/code
+wget https://wiki.farkas-attila.hu/images/c/c7/Weboldal.zip
+unzip -o Weboldal.zip
+
+# change &lt;ip&gt; tag in code
+sed -i "s/&lt;ip&gt;/$API_LB_DOMAIN/g" ui.php
+sed -i "s/&lt;ip&gt;/$API_LB_DOMAIN/g" ui_newproduct.php
+
+# create directory for server
+mkdir -p /srv/$NEPTUN
+mv ui.php /srv/$NEPTUN/index.php
+mv ui_newproduct.php /srv/$NEPTUN/newproduct.php
+
+# remove tmp directory
+cd /
+rm -rf /tmp/code
+
+cat &lt;&lt; EOF &gt; /etc/apache2/sites-enabled/000-default.conf
+&lt;VirtualHost *:80&gt;
+	ServerAdmin webmaster@localhost
+	DocumentRoot /srv/$NEPTUN
+	&lt;Directory /srv/$NEPTUN/&gt;
+		Options Indexes FollowSymLinks
+		AllowOverride None
+		Require all granted
+	&lt;/Directory&gt;
+	ErrorLog \${APACHE_LOG_DIR}/error.log
+	CustomLog \${APACHE_LOG_DIR}/access.log combined
+&lt;/VirtualHost&gt;
+EOF
+
+systemctl restart apache2
+</pre>
+    <p>Indítás: <span class="btn-orange">Launch instance</span></p>
+
+    <h3>d) Adatbázis inicializálása az API szerverről</h3>
+    <ul class="step-list">
+        <li>Lépj a <span class="menu-item">Instances</span> menüpontba ➔ Jelöld ki az <span class="param-value">NEPTUN-ec2-api</span> szervert ➔ <span class="btn-orange">Connect</span></li>
+        <li>A konzolban telepítsd a MySQL klienst:
+            <pre>sudo apt install mysql-client -y</pre>
+        </li>
+        <li>Csatlakozz az RDS adatbázishoz (a <span class="param-value">[HOST]</span> helyére az RDS Endpoint-ot másold!):
+            <pre>mysql -h[HOST] -uapi -p12345678</pre>
+        </li>
+        <li>Futtasd az alábbi adatbázis-séma szkriptet a MySQL parancssorban:</li>
+    </ul>
+
+<pre>create database if not exists electric;
+use electric;
+
+CREATE TABLE products (
+  id int AUTO_INCREMENT primary key,
+  name varchar(100),
+  type varchar(20),
+  value varchar(20),
+  price decimal(10,2),
+  created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+insert into products set name="ESP-32", type="MPU", value="32bit", price=1800.66; 
+insert into products set name="STM32F407", type="MPU", value="32bit", price=3500;
+insert into products set name="STLink", type="Tool", value="", price=500.15;
+
+create user 'api'@'%' identified by '12345678';
+grant all on electric.* to 'api'@'%';
+quit;
+</pre>
+
+    <div class="alert-info">
+        <strong>Működési ellenőrzés:</strong> Nyisd meg a UI szerver publikus IP címét a böngészőben (strictly HTTP protocol!). Ha a terméklista betölt, az infrastruktúra első része hibátlanul működik!
+    </div>
+
+    <h2>5. Skálázhatóság (AMI, Launch Template, Auto Scaling, Load Balancer)</h2>
+
+    <h3>a) AMI (Amazon Machine Image) Létrehozása</h3>
+    <ul class="step-list">
+        <li>Bal menü: <span class="menu-item">Instances</span> ➔ Jobb klikk a <span class="param-value">NEPTUN-ec2-ui</span> szerveren.</li>
+        <li>Válaszd: <span class="menu-item">Image and templates</span> ➔ <span class="menu-item">Create image</span></li>
+        <li><span class="panel-name">Image name:</span> <span class="param-value">NEPTUN-ui-ami</span></li>
+        <li>Nyomj rá a <span class="btn-orange">Create image</span> gombra.</li>
+    </ul>
+
+    <h3>b) Launch Template Létrehozása</h3>
+    <ul class="step-list">
+        <li>Jobb klikk a <span class="param-value">NEPTUN-ec2-ui</span> szerveren ➔ <span class="menu-item">Image and templates</span> ➔ <span class="menu-item">Create template from instance</span></li>
+        <li><span class="panel-name">Name:</span> <span class="param-value">NEPTUN-ui-tmp</span></li>
+        <li><span class="panel-name">Application and OS Images (AMI):</span> Válaszd ki a <span class="menu-item">My AMIs</span> fület, majd a <span class="param-value">NEPTUN-ui-ami</span>-t!</li>
+        <li>Kattints a <span class="btn-orange">Create launch template</span> gombra.</li>
+    </ul>
+
+    <h3>c) Auto Scaling Group & Load Balancer Felépítése</h3>
+    <ul class="step-list">
+        <li>Bal menü: <span class="menu-item">Auto Scaling Groups</span> ➔ <span class="btn-orange">Create Auto Scaling group</span></li>
+        <li><span class="panel-name">Name:</span> <span class="param-value">NEPTUN-ui-asg</span> | <span class="panel-name">Launch template:</span> <span class="param-value">NEPTUN-ui-tmp</span> ➔ <span class="btn-orange">Next</span></li>
+        <li><span class="panel-name">VPC:</span> <span class="param-value">NEPTUN-vpc-1</span> | <span class="panel-name">Subnets:</span> Pipáld ki mind a 3 subnetet! ➔ <span class="btn-orange">Next</span></li>
+        <li><span class="panel-name">Load balancing:</span>
+            <ul>
+                <li>Válaszd: <span class="param-value">Attach to a new load balancer</span></li>
+                <li>Scheme: <span class="param-value">Internet-facing</span></li>
+                <li>Listeners and routing (Default routing): Válaszd a <span class="param-value">Create target group</span> opciót!</li>
+                <li>Target group name: <span class="param-value">NEPTUN-ui-asg-tg</span> ➔ <span class="btn-orange">Next</span></li>
+            </ul>
+        </li>
+        <li><span class="panel-name">Group size & Scaling policies:</span>
+            <ul>
+                <li>Min desired capacity: <span class="param-value">1</span> | Max desired capacity: <span class="param-value">3</span></li>
+                <li>Scaling policy: <span class="param-value">Target tracking scaling policy</span></li>
+                <li>Instance warmup: <span class="param-value">60</span> sec ➔ <span class="btn-orange">Next</span> ➔ <span class="btn-orange">Next</span> ➔ <span class="btn-orange">Create Auto Scaling group</span></li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="alert-warning">
+        <strong>Integráció ellenőrzése / csatlakoztatása:</strong><br>
+        Kattints az elindult Auto Scaling Group-ra ➔ <span class="menu-item">Integrations</span> fül ➔ Load balancing részben <span class="btn-blue">Edit</span> ➔ Pipáld be: <span class="param-value">Application, Network or Gateway Load Balancer target groups</span> ➔ Válaszd ki a <span class="param-value">NEPTUN-ui-asg-tg</span>-t ➔ <span class="btn-orange">Update</span>
+    </div>
+
+    <h2>6. Tesztelés & Stressz Teszt</h2>
+
+    <h3>a) Load Balancer Weboldal Teszt</h3>
+    <ul class="step-list">
+        <li>Bal menü: <span class="menu-item">Load Balancers</span> ➔ Kattints a létrejött Load Balancer-re.</li>
+        <li>Keresd meg a <span class="panel-name">DNS name</span> mezőt, és másold ki az URL-t.</li>
+        <li>Nyisd meg egy új fülön HTTP-n keresztül. Ha betölt a weboldal, az ALB megfelelően továbbítja a kéréseket.</li>
+    </ul>
+
+    <h3>b) Stressz Tesztelés (Automatikus Skálázás Céljából)</h3>
+    <ul class="step-list">
+        <li>Bal menü: <span class="menu-item">Target Groups</span> ➔ Kattints a <span class="param-value">NEPTUN-ui-asg-tg</span> célcsoportra. (Healthy státuszú gépek száma kezdetben: 1).</li>
+        <li>Bal menü: <span class="menu-item">Instances</span> ➔ Jelöld ki az Auto Scaling Group által legutoljára elindított UI példányt ➔ <span class="btn-orange">Connect</span>.</li>
+        <li>Telepítsd és futtasd a CPU megterhelő eszközt:
+<pre>sudo apt update && sudo apt install stress -y
+stress --cpu $(nproc) --timeout 300
+</pre>
+        </li>
+        <li><strong>Ellenőrzés:</strong> Várj kb. 1-2 percet. Lépj vissza a <span class="menu-item">Target Groups</span> felületére, és ellenőrizd, hogy a **Healthy** gépek száma 1-ről 2-re (vagy 3-ra) emelkedett-e!</li>
+    </ul>
+
+    <h2>7. Erőforrások Teljes Törlése (Lebontási Sorrend)</h2>
+    <div class="alert-danger">
+        <strong>FONTOS:</strong> A gyakorlás végeztével a függőségek miatt kizárólag az alábbi sorrendben töröld az elemeket, nehogy felesleges költségek keletkezzenek a fiókodban!
+    </div>
+    <ol style="font-weight: bold; color: #b02a37;">
+        <li>Auto Scaling group törlése (<span class="btn-blue">Delete</span>)</li>
+        <li>Load Balancer törlése (<span class="btn-blue">Delete</span> ➔ confirm)</li>
+        <li>Target Group törlése (<span class="btn-blue">Delete</span>)</li>
+        <li>AMI deregisztrálása (<span class="btn-blue">Deregister</span>)</li>
+        <li>EC2 Instance-ok leállítása és törlése (<span class="btn-blue">Terminate instance</span>)</li>
+        <li>RDS Adatbázis törlése (<span class="btn-blue">Delete</span> ➔ Írd be: <i>delete me</i> ➔ <u>Ne kérj final snapshot-ot!</u>)</li>
+        <li>Internet Gateway lecsatlakoztatása és törlése (<span class="btn-blue">Detach</span> ➔ <span class="btn-blue">Delete</span>)</li>
+        <li>Subnetek törlése (<span class="btn-blue">Delete subnet</span>)</li>
+        <li>Security group törlése (<span class="btn-blue">Delete security group</span>)</li>
+        <li>VPC törlése (<span class="btn-blue">Delete VPC</span>)</li>
+    </ol>
+</div>
+
+</body>
+</html>
